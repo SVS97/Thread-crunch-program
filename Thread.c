@@ -47,7 +47,6 @@ struct thread_data {
 
 };
 
-
 /* Function runs in each thread */
 void *threadfoo(void *args)
 {
@@ -62,7 +61,6 @@ void *threadfoo(void *args)
 		res += exp(data->arrptr[i]);		/* exhibitor */
 		res += pov(data->arrptr[i]);		/* Random exponentiation */
 		res += ldexp(data->arrptr[i],2);      	/* multiplying a floating-point number by an integer power of two */
-		
 	}
 
 	clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &data->end_time);
@@ -70,7 +68,6 @@ void *threadfoo(void *args)
 									
 	*data->resptr += res;	/* manipulate the shared data */
 	pthread_mutex_unlock(data->lock);      /* release lock for the others */
-
 	return 0;
 }
 /* Random exponentiation */
@@ -114,7 +111,6 @@ int main(int argc, char *argv[])
 		printf("Numbers of threads is not a divisor of array size\n");
 		exit(0);
 	}
-
 	pthread_t threads[num_threads];
 	struct thread_data th_dat[num_threads];
 
@@ -137,7 +133,6 @@ int main(int argc, char *argv[])
 	/* Configure thread flags */
 	pthread_attr_t thread_attrs;
 	pthread_attr_init(&thread_attrs); /* fill with default attributes */
-
 									  
 	pthread_attr_setschedpolicy(&thread_attrs, SCHED_FIFO);
 	// Set maximum priority for main and other threads
@@ -147,15 +142,12 @@ int main(int argc, char *argv[])
 	pthread_attr_getschedparam(&thread_attrs, &param);
 	param.sched_priority = sched_get_priority_max(SCHED_FIFO);
 	pthread_attr_setschedparam(&thread_attrs, &param);
-
-
 	
 	cpu_set_t cpuset = all_cores();
 	int ret = pthread_attr_setaffinity_np(&thread_attrs, sizeof(cpu_set_t), &cpuset);
 	if (ret < 0) {
 		return -1;
 	}
-
 
 	/* Spawn threads */
 	pthread_mutex_t sharedlock;
